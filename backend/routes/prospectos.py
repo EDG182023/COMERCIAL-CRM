@@ -43,3 +43,16 @@ def list_etapas():
         'Estado_General': e.Estado_General,
         'Canal_ID': e.Canal_ID
     } for e in items])
+
+@bp.get('/estados_generales')
+def resumen_estados():
+    from sqlalchemy import func
+    rows = (
+        db.session.query(Prospecto.Estado_General, func.count(Prospecto.ID))
+        .group_by(Prospecto.Estado_General)
+        .all()
+    )
+    return jsonify([
+        {"nombre": estado, "valor": cantidad}
+        for estado, cantidad in rows
+    ])
